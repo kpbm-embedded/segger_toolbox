@@ -7,6 +7,7 @@
 # field SEGGER's download page uses, checks the md5 SEGGER publishes on that page, and pins the
 # sha256 on first use (config/pins.local.tsv, gitignored; a later mismatch aborts).
 # The licensed table is config/licensed.tsv, NOT config/pins.tsv, so `bootstrap` never fetches it.
+# Rust/Zig/Bend examples reach 32_17_embedded_rust, 32_24_microzig and 32_31_bend (sibling_id).
 # OPEN parts (config/pins.tsv, installed by bootstrap): xPack arm-none-eabi-gcc/gdb and SEGGER's
 # BSD-licensed RTT and SystemView target sources from GitHub; lib/cmsim.py (pixi env: unicorn,
 # pyelftools) runs firmware without a probe for the examples and templates.
@@ -218,11 +219,11 @@ hook_env() {
   [[ -d "$INST/arm-gcc/bin" ]] && PATH="$INST/arm-gcc/bin:$PATH"
   export PATH SEGGER_BOX_ROOT="$ROOT" SEGGER_BOX_BOARDS="$BOARDS" SEGGER_JLINK_DIR="$LINST/jlink"
   export SEGGER_RTT_DIR="$INST/rtt" SEGGER_SYSVIEW_DIR="$INST/systemview-src"
-  # other tool IDs, reached (never copied): Rust (32_17), Zig (32_24), AtomVM (32_29); empty when missing
+  # other tool IDs, reached (never copied): Rust (32_17), Zig (32_24), Bend (32_31); empty when missing
   SEGGER_RUST_ID=$(sibling_id BOX_EMBEDDED_RUST 32_17_embedded_rust rust-box)
   SEGGER_ZIG_ID=$(sibling_id BOX_MICROZIG 32_24_microzig microzig-box)
-  SEGGER_ATOMVM_ID=$(sibling_id BOX_ATOMVM 32_29_atomvm atomvm-box)
-  export SEGGER_RUST_ID SEGGER_ZIG_ID SEGGER_ATOMVM_ID
+  SEGGER_BEND_ID=$(sibling_id BOX_BEND 32_31_bend bend-box)
+  export SEGGER_RUST_ID SEGGER_ZIG_ID SEGGER_BEND_ID
   # Qt GUIs (RTT Viewer, Ozone, SystemView) and J-Link's own settings stay in the ID
   export XDG_CONFIG_HOME="$ROOT/cache/xdg-config" XDG_DATA_HOME="$ROOT/cache/xdg-data" XDG_CACHE_HOME="$ROOT/cache/xdg-cache"
   mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$XDG_CACHE_HOME" 2>/dev/null || true
@@ -246,7 +247,7 @@ hook_doctor() {
   if python3 -c 'import unicorn, elftools' 2>/dev/null; then d_ok "cmsim helpers: unicorn $(python3 -c 'import unicorn; print(unicorn.__version__)'), pyelftools (pixi env)"
   else d_fail "unicorn/pyelftools missing in the pixi env (./$NAME bootstrap)"; fi
   local v id f x
-  for v in "Rust:BOX_EMBEDDED_RUST:32_17_embedded_rust:rust-box" "Zig:BOX_MICROZIG:32_24_microzig:microzig-box" "AtomVM:BOX_ATOMVM:32_29_atomvm:atomvm-box"; do
+  for v in "Rust:BOX_EMBEDDED_RUST:32_17_embedded_rust:rust-box" "Zig:BOX_MICROZIG:32_24_microzig:microzig-box" "Bend:BOX_BEND:32_31_bend:bend-box"; do
     IFS=: read -r n p f x <<<"$v"
     id=$(sibling_id "$p" "$f" "$x")
     [[ -n "$id" ]] && d_ok "$n examples: ${id##*/} found" || d_warn "$n examples skip (exit 3): $f not found, set $p"

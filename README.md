@@ -14,7 +14,7 @@ GDB port with J-Link-style `monitor` replies plus the RTT telnet port. Examples 
 `./segger-box install --accept-license`. `bootstrap` never fetches them (they are in `config/licensed.tsv`).
 
 Status: **working without a probe; licensed tools need user action** (licence not accepted, SEGGER packages not
-installed; doctor 17 ok / 4 warn / 0 failed, examples 19/19, templates 15/15, smoke 15 ok / 6 skip, dry run 36/36,
+installed; doctor 16 ok / 5 warn / 0 failed, examples 18/19 (bend_ring_laws skips: 32_31_bend not there yet), templates 14/14, smoke 14 ok / 6 skip, dry run 36/36,
 2026-10-29). Launcher: `./segger-box`.
 
 ## What's included
@@ -132,7 +132,7 @@ offline, J-Link commands are only printed or dry-run; nothing needs the licensed
 | `plan_weact_boards` | G431, H562, H743, Pico 2, nice!nano | plans + Commander scripts checked; ESP32-C3 and CH32V003 explained | prints only |
 | `rust_defmt_rtt_sim` | BlackPill F411 | Rust + defmt over RTT (`rust_defmt_rtt`, 32_17 toolchain), frames decoded with defmt-print | simulated |
 | `zig_rtt_gdb_sim` | BlackPill F411 | Zig firmware + RTT (`zig_rtt_firmware`, 32_24 Zig), `gdb_jlink` script and J-Link plan on the Zig ELF | simulated |
-| `atomvm_pico_jlink` | Pico RP2040 | AtomVM (Erlang) app run on the host AtomVM (32_29); VM/lib/app images + Commander script for SWD | checked, not flashed |
+| `bend_ring_laws` | host | Bend 2 (32_31_bend): RTT ring-buffer index laws (used/free/full/wrap) for every offset pair | host only; skips (exit 3) without 32_31_bend |
 
 SEGGER's RTT/SystemView target sources are not copied into this ID: `bootstrap` fetches them pinned from SEGGER's
 GitHub repositories (BSD-style licence). "Simulated" means the firmware ran in `lib/cmsim.py` (unicorn: CPU and
@@ -156,17 +156,17 @@ Templates (`./segger-box new <kind> <name> [--dir D]`):
 - `rust_defmt_rtt`: Rust (cortex-m-rt, defmt, defmt-rtt, no HAL) with a pinned Cargo.lock; `check.sh` builds it offline
   with 32_17's toolchain, runs it in cmsim and decodes RTT with defmt-print.
 - `zig_rtt_firmware`: Zig `main` calling SEGGER's C RTT (gcc-built), linked by 32_24's Zig; `make check`.
-- `atomvm_pico_jlink`: AtomVM Erlang app + the Pico flash layout for J-Link (VM 0x10000000, lib 0x10100000, app 0x10180000); `make check`.
 
-### Rust, Zig, BEAM
+### Rust, Zig, Bend
 
 The languages' toolchains live in other IDs and are reached, never copied: `$BOX_EMBEDDED_RUST` (32_17),
-`$BOX_MICROZIG` (32_24), `$BOX_ATOMVM` (32_29), else the sibling folder (`SEGGER_RUST_ID`, `SEGGER_ZIG_ID`,
-`SEGGER_ATOMVM_ID` inside the launcher). Without them the three examples exit 3 (skip) and the smoke test skips
-the templates; `doctor` says which are found. J-Link itself does not care about the language (it loads ELF/HEX/BIN
+`$BOX_MICROZIG` (32_24), `$BOX_BEND` (32_31), else the sibling folder (`SEGGER_RUST_ID`, `SEGGER_ZIG_ID`,
+`SEGGER_BEND_ID` inside the launcher). Without them the examples exit 3 (skip) and the smoke test skips the
+templates; `doctor` says which are found. J-Link itself does not care about the language (it loads ELF/HEX/BIN
 and reads RTT by the `_SEGGER_RTT` block); what differs is the RTT payload: defmt sends binary frames, so log the
-raw channel and decode with `defmt-print -e <elf>` (or use probe-rs from 32_17). AtomVM on the Pico: the J-Link
-path writes the same three images the BOOTSEL drive takes, at the addresses compiled into the AtomVM 0.6.6 VM.
+raw channel and decode with `defmt-print -e <elf>` (or use probe-rs from 32_17). Bend 2 has no MCU target (it
+emits hosted POSIX C), so it gets no firmware here, only host-side laws: `bend_ring_laws` states the RTT ring-buffer
+index math; its `.bend` file was written before 32_31_bend existed and has not been run yet.
 
 Firmware templates build with `segger-box run make -C <name> [BOARD=...]` (the launcher puts the pinned
 toolchain on PATH and sets `SEGGER_RTT_DIR`, `SEGGER_SYSVIEW_DIR`, `SEGGER_BOX_ROOT`).
@@ -224,8 +224,8 @@ tests/test_install_logic.sh      # licence gate, POST, md5, TOFU sha256, unpack,
 tests/test_smoke.sh              # installed binaries + all 12 templates generated and built/checked (SKIP for licensed parts)
 ```
 
-Last known (2026-10-29): doctor 17 ok / 4 warn (licensed packages, udev) / 0 fail; examples 19/19; smoke 15 ok
-(all 15 templates) / 6 skip (licensed binaries); dry-run 36/36 (incl. install logic 15/15 on a fixture, shellcheck).
+Last known (2026-10-29): doctor 16 ok / 5 warn (licensed packages, udev, Bend ID missing) / 0 fail; examples 18 ok + 1 skip (bend_ring_laws); smoke 14 ok
+(all 14 templates) / 6 skip (licensed binaries); dry-run 36/36 (incl. install logic 15/15 on a fixture, shellcheck).
 
 ## Troubleshooting
 

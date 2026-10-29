@@ -85,3 +85,12 @@
   atomvmlib 0.6.6 has no `lists:sum/1`.
 - Results: doctor 17 ok (3 of them the sibling IDs) / 4 warn / 0 failed; examples 19/19; smoke 15 ok / 6 skip (licensed binaries).
   Fresh clone (BOX_INTEGRATION=0, cache linked, BOX_EMBEDDED_RUST/BOX_MICROZIG/BOX_ATOMVM set): same counts, dry run 36/36.
+
+## 2026-10-29: Bend instead of BEAM (brief correction)
+- The third language is Bend 2, not BEAM: `templates/atomvm_pico_jlink` and `examples/atomvm_pico_jlink` moved to the
+  Trash (logged); the AtomVM sibling lookup is replaced by `BOX_BEND` / `32_31_bend` (`bend-box`). The 32_29 address
+  finding above still stands and is reported to the coordinator.
+- New `examples/bend_ring_laws` (host only: Bend has no MCU target): RTT ring-buffer index laws in `ring_laws.bend`.
+  32_31_bend does not exist yet, so the example exits 3 (skip) and the `.bend` source is unverified (draft).
+- Results: doctor 16 ok / 5 warn / 0 failed (Bend: warn, not found); examples 18 ok + 1 skip (exit 3, shown as FAIL by
+  boxtool's summary); smoke 14 ok / 6 skip; dry run 36/36.
