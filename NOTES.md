@@ -84,3 +84,4 @@
   use 0x10080000/0x10100000 (an app .uf2 there would overwrite the lib): reported, not changed (other ID).
   atomvmlib 0.6.6 has no `lists:sum/1`.
 - Results: doctor 17 ok (3 of them the sibling IDs) / 4 warn / 0 failed; examples 19/19; smoke 15 ok / 6 skip (licensed binaries).
+  Fresh clone (BOX_INTEGRATION=0, cache linked, BOX_EMBEDDED_RUST/BOX_MICROZIG/BOX_ATOMVM set): same counts, dry run 36/36.
