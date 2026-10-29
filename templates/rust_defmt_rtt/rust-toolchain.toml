@@ -1,0 +1,6 @@
+# Same pin as 32_17_embedded_rust (its RUSTUP_HOME already holds this toolchain and the target).
+[toolchain]
+channel = "1.99.1"
+profile = "minimal"
+components = ["llvm-tools"]
+targets = ["thumbv7em-none-eabihf"]

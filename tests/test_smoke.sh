@@ -2,7 +2,7 @@
 # Smoke test of segger-box: installed SEGGER binaries are present and their libraries resolve
 # (they are never started against a probe: J-Link tools may update probe firmware on connect),
 # every template is generated with `new` and built/checked: jlink_script validates, rtt_app compiles,
-# and the ten firmware/host templates build and run in cmsim or offline checks (no probe; SKIP before
+# and the thirteen firmware/host templates (incl. Rust, Zig, AtomVM through 32_17/32_24/32_29) build and run in cmsim or offline checks (no probe; SKIP before
 # bootstrap installed the toolchain and SEGGER's RTT/SystemView sources).
 # Usage: tests/test_smoke.sh
 # shellcheck disable=SC2015  # ok() always returns 0
@@ -55,8 +55,16 @@ if [[ -x "$HERE/install/arm-gcc/bin/arm-none-eabi-gcc" ]] && [[ -d "$HERE/instal
   tpl s_cli rtt_telnet_client "python3 s_cli/s_cli.py --selftest | grep -q 'selftest: PASS'"
   tpl s_h7 jlink_script_h7 "s_h7/check.sh | grep -q '^PASS s_h7'"
   tpl s_pf production_flash "make -s -C s_pf FW='$f411.bin' SERIALS='7 8' check program SERIAL=8 | grep -q '^+ JLinkExe'"
+  # Rust / Zig / BEAM templates use the toolchains of other IDs (32_17, 32_24, 32_29): skip when not found
+  sib() { "$Q" run bash -c "test -x \"\${$1:-}/$2\"" >/dev/null 2>&1; }
+  if sib SEGGER_RUST_ID rust-box; then tpl s_rs rust_defmt_rtt "s_rs/check.sh | grep -q '^PASS s_rs'"
+  else skip "template rust_defmt_rtt: 32_17_embedded_rust not found (BOX_EMBEDDED_RUST)"; fi
+  if sib SEGGER_ZIG_ID microzig-box; then tpl s_zig zig_rtt_firmware "make -s -C s_zig check | grep -q '^PASS s_zig'"
+  else skip "template zig_rtt_firmware: 32_24_microzig not found (BOX_MICROZIG)"; fi
+  if sib SEGGER_ATOMVM_ID atomvm-box; then tpl s_beam atomvm_pico_jlink "make -s -C s_beam check | grep -q '^PASS s_beam'"
+  else skip "template atomvm_pico_jlink: 32_29_atomvm not found (BOX_ATOMVM)"; fi
 else
-  skip "10 firmware/host templates: toolchain and RTT sources not installed (./segger-box bootstrap)"
+  skip "13 firmware/host templates: toolchain and RTT sources not installed (./segger-box bootstrap)"
 fi
 echo "smoke: $pass ok, $failn failed, $skipn skipped"
 [[ "$failn" -eq 0 ]]

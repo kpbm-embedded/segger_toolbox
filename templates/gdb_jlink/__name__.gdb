@@ -12,7 +12,7 @@ compare-sections
 break main
 continue
 info registers pc
-print $pc == main
+info symbol $pc
 monitor regs
 monitor reset
 detach

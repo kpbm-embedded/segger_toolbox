@@ -200,6 +200,17 @@ need_bin() { # pkg binary -> path or die
   printf '%s' "$p"
 }
 
+sibling_id() { # ENV_VAR FOLDER MARKER -> another tool ID: the variable's folder (or one above it) holding MARKER,
+  # else ../FOLDER next to this ID, else nothing (same lookup as 32_30_robot_framework)
+  local d=${!1:-} i
+  for i in 1 2 3; do
+    [[ -n "$d" ]] && [[ -e "$d/$3" ]] && { (cd -P "$d" && pwd -P); return 0; }
+    d=${d%/*}
+  done
+  if [[ -e "$ROOT/../$2/$3" ]]; then (cd -P "$ROOT/../$2" && pwd -P); fi
+  return 0
+}
+
 hook_env() {
   local d
   for d in "$LINST/jlink" "$LINST/ozone" "$LINST/systemview"; do [[ -d "$d/" ]] && PATH="$d:$PATH"; done
@@ -207,6 +218,11 @@ hook_env() {
   [[ -d "$INST/arm-gcc/bin" ]] && PATH="$INST/arm-gcc/bin:$PATH"
   export PATH SEGGER_BOX_ROOT="$ROOT" SEGGER_BOX_BOARDS="$BOARDS" SEGGER_JLINK_DIR="$LINST/jlink"
   export SEGGER_RTT_DIR="$INST/rtt" SEGGER_SYSVIEW_DIR="$INST/systemview-src"
+  # other tool IDs, reached (never copied): Rust (32_17), Zig (32_24), AtomVM (32_29); empty when missing
+  SEGGER_RUST_ID=$(sibling_id BOX_EMBEDDED_RUST 32_17_embedded_rust rust-box)
+  SEGGER_ZIG_ID=$(sibling_id BOX_MICROZIG 32_24_microzig microzig-box)
+  SEGGER_ATOMVM_ID=$(sibling_id BOX_ATOMVM 32_29_atomvm atomvm-box)
+  export SEGGER_RUST_ID SEGGER_ZIG_ID SEGGER_ATOMVM_ID
   # Qt GUIs (RTT Viewer, Ozone, SystemView) and J-Link's own settings stay in the ID
   export XDG_CONFIG_HOME="$ROOT/cache/xdg-config" XDG_DATA_HOME="$ROOT/cache/xdg-data" XDG_CACHE_HOME="$ROOT/cache/xdg-cache"
   mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$XDG_CACHE_HOME" 2>/dev/null || true
@@ -229,6 +245,12 @@ hook_doctor() {
   else d_fail "arm-none-eabi-gcc/gdb not on PATH (./$NAME bootstrap)"; fi
   if python3 -c 'import unicorn, elftools' 2>/dev/null; then d_ok "cmsim helpers: unicorn $(python3 -c 'import unicorn; print(unicorn.__version__)'), pyelftools (pixi env)"
   else d_fail "unicorn/pyelftools missing in the pixi env (./$NAME bootstrap)"; fi
+  local v id f x
+  for v in "Rust:BOX_EMBEDDED_RUST:32_17_embedded_rust:rust-box" "Zig:BOX_MICROZIG:32_24_microzig:microzig-box" "AtomVM:BOX_ATOMVM:32_29_atomvm:atomvm-box"; do
+    IFS=: read -r n p f x <<<"$v"
+    id=$(sibling_id "$p" "$f" "$x")
+    [[ -n "$id" ]] && d_ok "$n examples: ${id##*/} found" || d_warn "$n examples skip (exit 3): $f not found, set $p"
+  done
   [[ -r "$LICENSED" ]] && d_ok "licensed table: $(lic_names | wc -l) packages for $PLATFORM" || d_fail "config/licensed.tsv missing"
   for n in $(lic_names); do
     if lic_installed "$n"; then d_ok "$n $(lic_get "$n" 2) installed (user-accepted licence)"

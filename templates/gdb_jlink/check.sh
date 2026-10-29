@@ -17,9 +17,9 @@ timeout 120 arm-none-eabi-gdb -nx -batch -x "$out/@NAME@.sim.gdb" "$fw" >"$out/g
 wait "$srv" || true
 cat "$out/gdb.log"
 [[ "$rc" = 0 ]] || { echo "FAIL @NAME@: gdb exit $rc"; exit 1; }
-grep -q 'Breakpoint 1, main' "$out/gdb.log" || { echo "FAIL @NAME@: breakpoint at main not hit"; exit 1; }
-# shellcheck disable=SC2016  # a literal GDB value history name
-grep -q '^\$1 = 1' "$out/gdb.log" || { echo "FAIL @NAME@: pc != main"; exit 1; }
+# C: "Breakpoint 1, main ()"; Zig: "Breakpoint 1, main.main ()"; the pc lies in main after its prologue
+grep -Eq 'Breakpoint 1, (\S+\.)?main \(' "$out/gdb.log" || { echo "FAIL @NAME@: breakpoint at main not hit"; exit 1; }
+grep -Eq '^main( \+ [0-9]+)? in section \.text' "$out/gdb.log" || { echo "FAIL @NAME@: pc not in main"; exit 1; }
 grep -q 'Resetting target' "$out/gdb.log" || { echo "FAIL @NAME@: monitor reset"; exit 1; }
 if grep -q 'MIS-MATCHED' "$out/gdb.log"; then echo "FAIL @NAME@: compare-sections"; exit 1; fi
 echo "PASS @NAME@: load, compare-sections, break main, monitor commands (cmsim GDB server)"

@@ -294,6 +294,9 @@ def cmd_run(a):
             break
     reason = sim.stop_reason or "instruction budget used up"
     lay = sim.rtt_layout()
+    if a.raw_out:              # binary channel data (defmt frames, SystemView packets) for host decoders
+        with open(a.raw_out, "wb") as f:
+            f.write(bytes(up.get(a.channel, b"")))
     if a.json:
         print(json.dumps({"stop": reason, "instructions": done, "rtt": lay,
                           "up": {k: v.decode("latin-1") for k, v in up.items()},
@@ -606,6 +609,7 @@ def main(argv=None):
     r.add_argument("--terminals", action="store_true", help="split channel output by virtual terminal")
     r.add_argument("--itm", action="store_true", help="print ITM stimulus port output instead of RTT")
     r.add_argument("--json", action="store_true")
+    r.add_argument("--raw-out", help="also write the raw bytes of --channel to this file (e.g. for defmt-print)")
     r.add_argument("--allow-timeout", action="store_true")
     i = sub.add_parser("info")
     i.add_argument("elf")

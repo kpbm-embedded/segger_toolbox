@@ -65,3 +65,22 @@
   cache linked): bootstrap ok, doctor 14 ok / 4 warn / 0 failed, smoke 12 ok / 6 skip, dry run 36/36, examples 16/16.
 - Results: doctor 17 ok / 4 warn / 0 failed; examples 16/16; smoke 12 ok / 6 skip (licensed binaries); dry run
   36/36 (install logic 15/15, shellcheck 25 files clean); `box scripts check 32_12` clean.
+
+## 2026-10-29: Rust, Zig and BEAM (addendum)
+- Toolchains reached, not copied (`sibling_id`, as in 32_30): 32_17_embedded_rust (`rust-box cargo`, `defmt-print`),
+  32_24_microzig (`microzig-box zig`), 32_29_atomvm (`atomvm-box build|avm|where`). Doctor reports each; examples exit 3
+  and smoke tests skip when one is missing.
+- Rust: template `rust_defmt_rtt` + example `rust_defmt_rtt_sim`. The crates (defmt 1.2, defmt-rtt 1.3.1, panic-probe,
+  cortex-m-rt) are already in 32_17's registry cache, so `cargo build --offline` works; Cargo.lock is shipped in the
+  template. cmsim got `--raw-out` for binary channels; defmt-print decodes them (levels, derive(Format), trace! filtered).
+- Zig: template `zig_rtt_firmware` + example `zig_rtt_gdb_sim`. Zig 0.17 has no `@cImport` (moved to the build system)
+  and ships no libc headers for freestanding Arm: the RTT C files are compiled by the pinned arm-none-eabi-gcc, Zig
+  declares the three functions `extern` and links (memcpy from its compiler_rt). ReleaseSmall strips symbols: `-fno-strip`.
+  lld does not search -L for `INCLUDE`: the Makefile writes a linker script with the full memory.ld path. The gdb_jlink
+  check now accepts `main.main` and a breakpoint after main's prologue.
+- BEAM: template `atomvm_pico_jlink` + example `atomvm_pico_jlink` (Erlang app run on the host AtomVM, Pico images for
+  J-Link). Found: the AtomVM 0.6.6 Pico VM reads lib.avm at 0x10100000 and main.avm at 0x10180000 (constants in the
+  image, and the upstream atomvmlib .uf2 is at 0x10100000); the VM itself ends at 0x1008e800. 32_29's `plan`/`build`
+  use 0x10080000/0x10100000 (an app .uf2 there would overwrite the lib): reported, not changed (other ID).
+  atomvmlib 0.6.6 has no `lists:sum/1`.
+- Results: doctor 17 ok (3 of them the sibling IDs) / 4 warn / 0 failed; examples 19/19; smoke 15 ok / 6 skip (licensed binaries).

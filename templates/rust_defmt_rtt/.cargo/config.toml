@@ -1,0 +1,6 @@
+# No runner on purpose: flashing is done by J-Link (segger-box plan / jlink) or probe-rs, by you.
+[build]
+target = "thumbv7em-none-eabihf"
+
+[env]
+DEFMT_LOG = "debug"
