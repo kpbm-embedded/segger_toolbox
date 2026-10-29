@@ -1,0 +1,13 @@
+# 32_12_segger pinned downloads (lib/boxtool.bash format; tab separated). `bootstrap` installs the core group.
+# Open (non-licensed) parts only: the SEGGER packages are in config/licensed.tsv (install --accept-license).
+# arm-gcc: xPack arm-none-eabi-gcc (gcc, binutils, gdb); sha256 from the .sha files next to each release asset.
+# rtt / systemview-src: SEGGER's target sources published on GitHub under a BSD-style licence (LICENSE.md),
+# pinned by commit (tags V8.58.0 and V4.10); sha256 of the GitHub archive taken 2026-10-29.
+# name	version	group	platform	kind	digest	url	upstream
+arm-gcc	15.2.1-1.1	core	linux-x64	tar	sha256:da6a49ad4003944b823c6c93702a8787c922ab34bd7e918ec0eaf6933a9b1ff6	https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v15.2.1-1.1/xpack-arm-none-eabi-gcc-15.2.1-1.1-linux-x64.tar.gz	xpack-dev-tools/arm-none-eabi-gcc-xpack
+arm-gcc	15.2.1-1.1	core	linux-arm64	tar	sha256:67980c7990eba7bb7ffdf39699102effd70889f5ac427be19a8c8a6c5fab2972	https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v15.2.1-1.1/xpack-arm-none-eabi-gcc-15.2.1-1.1-linux-arm64.tar.gz	xpack-dev-tools/arm-none-eabi-gcc-xpack
+arm-gcc	15.2.1-1.1	core	darwin-x64	tar	sha256:5be906a5194c3173e145a58048e5607ffff947773237802b93e55e23c415f1b6	https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v15.2.1-1.1/xpack-arm-none-eabi-gcc-15.2.1-1.1-darwin-x64.tar.gz	xpack-dev-tools/arm-none-eabi-gcc-xpack
+arm-gcc	15.2.1-1.1	core	darwin-arm64	tar	sha256:574082d35e49a2bcbdc355836b2a3ae5e5bb3b9456c9f5e37177db2ab4aad870	https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v15.2.1-1.1/xpack-arm-none-eabi-gcc-15.2.1-1.1-darwin-arm64.tar.gz	xpack-dev-tools/arm-none-eabi-gcc-xpack
+arm-gcc	15.2.1-1.1	core	win-x64	zip	sha256:bae6a3d1667697ce750c3b13d6d26d80973ecedc2cc87bf04869e83447fd93ea	https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v15.2.1-1.1/xpack-arm-none-eabi-gcc-15.2.1-1.1-win32-x64.zip	xpack-dev-tools/arm-none-eabi-gcc-xpack
+rtt	V8.58.0	core	any	tar	sha256:bebf42a84653ee1c5c01441b109bf9a0e86343ca3d92c59edbea4d9994251e68	https://github.com/SEGGERMicro/RTT/archive/4d8feab3150f86f37a9d323ddc88d6cdf5673072.tar.gz	-
+systemview-src	V4.10	core	any	tar	sha256:1ddd369066e430ccf2b646176c1ae053eda854e16f60506e0d67b8d7a61a584b	https://github.com/SEGGERMicro/SystemView/archive/7cff780b7acf5949f0988a79623396db1c919012.tar.gz	-

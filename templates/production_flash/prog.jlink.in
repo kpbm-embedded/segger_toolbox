@@ -1,0 +1,10 @@
+r
+h
+erase
+loadbin @FW@ @FW_BASE@
+verifybin @FW@ @FW_BASE@
+loadbin @SN@ @SN_BASE@
+verifybin @SN@ @SN_BASE@
+r
+g
+exit

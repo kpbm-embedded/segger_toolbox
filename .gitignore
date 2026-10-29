@@ -1,0 +1,29 @@
+# segger-box: only sources go into git. Everything below is downloaded, solved or produced again by
+# ./segger-box bootstrap | install --accept-license | examples test (pins: config/pins.tsv, pixi.toml + pixi.lock,
+# pixi sha256 in segger-box; licensed SEGGER packages: config/licensed.tsv, md5 + first-use sha256).
+/.bin/
+/.pixi/
+/cache/
+/install/
+/native/
+/build/
+/log/
+/config/local.env
+# your licence acceptance and trust-on-first-use pins (per machine)
+/config/local-licence.txt
+/config/pins.local.tsv
+# SEGGER packages and other downloads must never be committed
+*.tgz
+*.tar.gz
+*.tar.zst
+*.part
+# build output of template instances and firmware made inside the folder
+build/
+*.elf
+*.hex
+*.bin
+*.map
+*.o
+*.log
+__pycache__/
+*.pyc

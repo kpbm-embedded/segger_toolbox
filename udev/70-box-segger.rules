@@ -1,0 +1,9 @@
+# 70-box-segger.rules: SEGGER J-Link / J-Trace access for the logged-in user (written 2026-10-25
+# for 32_12_segger). The J-Link pack ships its own 99-jlink.rules (install/jlink/99-jlink.rules
+# after `segger-box install --accept-license`); either file is enough.
+# uaccess: the seat user gets access via systemd-logind, no group needed.
+ACTION=="remove", GOTO="box_segger_end"
+SUBSYSTEM!="usb|tty|hidraw", GOTO="box_segger_end"
+# every SEGGER USB device (J-Link models, J-Trace, Flasher, J-Link OB on eval boards, CDC/VCOM)
+ATTRS{idVendor}=="1366", MODE="660", TAG+="uaccess"
+LABEL="box_segger_end"

@@ -1,0 +1,37 @@
+/*********************************************************************
+* @NAME@.jdebug: Ozone project (from `segger-box new ozone_project @NAME@`, 32_12_segger).
+* Open with: segger-box ozone @NAME@.jdebug   (Ozone is licensed; see segger-box licence)
+* Device and interface: BlackPill STM32F411CE over SWD at 4 MHz. Change them for other boards
+* (device names: segger-box boards).
+*********************************************************************/
+
+void OnProjectLoad (void) {
+  Project.SetDevice ("STM32F411CE");
+  Project.SetHostIF ("USB", "");
+  Project.SetTargetIF ("SWD");
+  Project.SetTIFSpeed ("4 MHz");
+  Project.AddSvdFile ("$(InstallDir)/Config/CPU/Cortex-M4F.svd");
+  File.Open ("$(ProjectDir)/build/@NAME@.elf");
+}
+
+/* Ozone's default for flash images: after download, SP and PC from the image's vector table. */
+void AfterTargetDownload (void) {
+  unsigned int SP;
+  unsigned int PC;
+  unsigned int VectorTableAddr;
+  VectorTableAddr = Elf.GetBaseAddr ();
+  SP = Target.ReadU32 (VectorTableAddr);
+  if (SP != 0xFFFFFFFF) {
+    Target.SetReg ("SP", SP);
+  }
+  PC = Elf.GetEntryPointPC ();
+  if (PC != 0xFFFFFFFF) {
+    Target.SetReg ("PC", PC);
+  } else {
+    Util.Error ("Project script error: failed to set entry point PC", 1);
+  }
+}
+
+void AfterTargetReset (void) {
+  Util.Log ("@NAME@: target reset");
+}

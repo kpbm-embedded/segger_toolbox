@@ -1,0 +1,16 @@
+# 32_12_segger pixi env (managed by ./segger-box, see README.md). conda-forge + PyPI, pinned by pixi.lock;
+# env in ./.pixi, package caches in ./cache. Host-side helpers for the examples: ELF reading (pyelftools)
+# and a Cortex-M instruction emulator (unicorn) that runs the RTT/ITM/SystemView firmware without a probe.
+# The SEGGER packages themselves are licensed and installed separately (install --accept-license).
+[workspace]
+name = "segger_box"
+channels = ["conda-forge"]
+platforms = ["linux-64", "linux-aarch64", "osx-64", "osx-arm64"]
+
+[dependencies]
+python = "3.12.*"
+make = "4.4.*"
+pyelftools = "0.33.*"
+
+[pypi-dependencies]
+unicorn = "==2.1.4"

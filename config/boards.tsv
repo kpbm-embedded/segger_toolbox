@@ -1,0 +1,13 @@
+# Owned boards -> J-Link (tab separated). device = J-Link device name (JLinkExe -device), - = not supported.
+# board	chip	jlink-device	interface	flash-base	notes	speed-kHz
+blackpill_f411	STM32F411CEU6	STM32F411CE	SWD	0x08000000	WeAct BlackPill v3; SWDIO/SWCLK/GND/3V3 header; BOOT0 low	4000
+pico_rp2040	RP2040	RP2040_M0_0	SWD	0x10000000	Raspberry Pi Pico; SWD header (multi-drop, core 0); .bin needs a boot2 image (use .elf/.hex)	4000
+esp32s3_devkitc	ESP32-S3 (Xtensa LX7)	-	-	-	J-Link does not support the Xtensa ESP32-S3: use the built-in USB-JTAG with OpenOCD-esp32 / esptool (not in this ID)	-
+arduino_nano	ATmega328P (AVR)	-	-	-	J-Link does not support AVR: use avrdude over the bootloader or an ISP programmer (not in this ID)	-
+weact_g431	STM32G431CBU6	STM32G431CB	SWD	0x08000000	WeAct STM32G431 core board; SWD header; 128 KB flash, 32 KB SRAM	4000
+weact_h562	STM32H562RGT6	STM32H562RG	SWD	0x08000000	WeAct STM32H562 core board (Cortex-M33, TrustZone off by default); 1 MB flash	4000
+weact_h743	STM32H743VIT6	STM32H743VI	SWD	0x08000000	WeAct STM32H743 core board; keep debug in low-power modes with templates/jlink_script_h7	4000
+pico2_rp2350	RP2350	RP2350_M33_0	SWD	0x10000000	Raspberry Pi Pico 2; SWD header, Arm core 0; images need an IMAGE_DEF block (use .elf/.hex from the Pico SDK)	4000
+nicenano_nrf52840	nRF52840	nRF52840_xxAA	SWD	0x00026000	nice!nano / Pro Micro nRF52840; SWD pads on the back; app at 0x26000 after the S140 SoftDevice + UF2 bootloader (a full erase removes them)	4000
+esp32c3_supermini	ESP32-C3 (RISC-V)	-	-	-	not in this table: use the built-in USB-Serial/JTAG with OpenOCD-esp32 / esptool (not in this ID)	-
+ch32v003	CH32V003 (RISC-V, SDI single-wire)	-	-	-	J-Link has no single-wire SDI: use a WCH-LinkE with wlink/minichlink (not in this ID)	-

@@ -1,0 +1,6 @@
+r
+h
+loadfile build/@NAME@.hex
+r
+g
+exit

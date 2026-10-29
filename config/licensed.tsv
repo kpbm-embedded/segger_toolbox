@@ -1,0 +1,9 @@
+# 32_12_segger licensed downloads (tab separated). NOT config/pins.tsv: `bootstrap` never fetches these.
+# Only `./segger-box install --accept-license` (the user accepts SEGGER's terms) downloads them, by POSTing
+# accept_license_agreement=accepted like the download page form. md5 = the value SEGGER publishes in the download
+# page metadata (checked 2026-10-25 on https://www.segger.com/downloads/jlink/); SEGGER publishes no sha256, so the
+# sha256 is pinned on first download into config/pins.local.tsv (TOFU) and checked on every later install.
+# name	version	platform	md5	url	licence-urls	title
+jlink	V9.88	linux-x64	8752fae1ab5c0254c73380035b16f53e	https://www.segger.com/downloads/jlink/JLink_Linux_V988_x86_64.tgz	https://www.segger.com/downloads/jlink/ https://www.segger.com/products/debug-probes/j-link/tools/terms-of-use/	J-Link Software and Documentation Pack (incl. RTT Viewer/Logger/Client, GDB server), 2026-10-22, 89.9 MB
+ozone	V3.50b	linux-x64	c9cb3aaa76adecaecbb6b59a9697a318	https://www.segger.com/downloads/jlink/Ozone_Linux_V350b_x86_64.tgz	https://www.segger.com/downloads/jlink/ https://www.segger.com/products/development-tools/ozone-j-link-debugger/#licensing0	Ozone J-Link debugger, 2026-09-24, 28.7 MB
+systemview	V4.10b	linux-x64	f24b6f4050356972d101c00017d2f84b	https://www.segger.com/downloads/jlink/SystemView_Linux_V410b_x86_64.tgz	https://www.segger.com/downloads/jlink/ https://www.segger.com/products/development-tools/systemview/license/conditions-activation/	SystemView portable package, 2026-05-19, 10.1 MB

@@ -1,0 +1,7 @@
+r
+h
+loadbin @BUILD@/@NAME@_merged.bin 0x08000000
+verifybin @BUILD@/@NAME@_merged.bin 0x08000000
+r
+g
+exit

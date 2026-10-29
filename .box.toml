@@ -1,0 +1,47 @@
+id = "32_12"
+name = "segger"
+kind = "tool"
+status = "active"
+tags = ["embedded"]
+
+[backup]
+tier = "critical"
+
+[tool]
+name = "segger"
+launcher = "segger-box"
+aliases = ["segger-box"]
+env_var = "BOX_SEGGER"
+env_path = "."
+native = "native/native.zsh"
+native_provides = ["JLinkExe", "JLinkGDBServer", "JLinkRTTClient", "JLinkRTTLogger", "JLinkRTTViewer", "ozone", "systemview"]
+native_off_compat = ["SEGGER_BOX_NATIVE_OFF"]
+network = ["bootstrap", "install", "update"]
+needs_sudo = ["J-Link udev rules (segger-box doctor prints them)"]
+
+[scripts.segger-box]
+schema = 1
+kind = "launcher"
+path = "segger-box"
+summary = "SEGGER J-Link pack, Ozone, SystemView (proprietary: the user accepts the licence; pinned, TOFU sha256)."
+interpreter = "sh"
+commands = ["help", "where", "bootstrap", "install", "update", "clean", "status", "doctor", "shell", "run", "test", "new", "examples", "native", "relocate", "pack", "licence", "license", "jlink", "gdbserver", "rtt", "rtt-logger", "rtt-client", "ozone", "systemview", "list", "boards", "plan"]
+flags = ["--accept-license", "--all", "--check", "--dir", "--dry-run", "--env", "--force", "--help", "--no-demos", "--only", "--out", "--print", "--with-cache", "--yes"]
+reads = { global = ["BOXT_DRY_RUN"] }
+dry_run_flag = "--dry-run"
+apply_flag = { clean = "--yes" }
+scope = "global"
+
+[scripts."cmsim.py"]
+schema = 1
+kind = "helper"
+path = "lib/cmsim.py"
+summary = "runs a Cortex-M ELF in unicorn: RTT, ITM ports, GDB server with J-Link monitor replies + RTT telnet (no probe)"
+interpreter = "python3"
+
+[scripts."jlink_check.py"]
+schema = 1
+kind = "helper"
+path = "lib/jlink_check.py"
+summary = "offline checks of J-Link Commander scripts, .JLinkScript files and Ozone .jdebug projects"
+interpreter = "python3"

@@ -1,0 +1,41 @@
+/*********************************************************************
+* @NAME@.JLinkScript: STM32H743 (WeAct H743, Cortex-M7) debug in low-power modes.
+* The H7 stops the debug clocks in Sleep/Stop/Standby unless DBGMCU_CR allows it, so a
+* firmware that sleeps (WFI) drops the J-Link connection. This script sets DBGMCU_CR after
+* connect and after every reset. Pass it with -JLinkScriptFile @NAME@.JLinkScript.
+* See https://kb.segger.com/J-Link_Script_Files and RM0433 (DBGMCU_CR).
+*********************************************************************/
+
+__constant U32 _DBGMCU_CR   = 0x5C001004;
+__constant U32 _DBGSLEEP_D1 = (1 << 0);
+__constant U32 _DBGSTOP_D1  = (1 << 1);
+__constant U32 _DBGSTBY_D1  = (1 << 2);
+__constant U32 _D1DBGCKEN   = (1 << 21);
+__constant U32 _D3DBGCKEN   = (1 << 22);
+
+/* helper (not a hook: J-Link only calls the hook names below) */
+int _EnableLowPowerDebug(void) {
+  U32 v;
+  v = JLINK_MEM_ReadU32(_DBGMCU_CR);
+  v = v | _DBGSLEEP_D1 | _DBGSTOP_D1 | _DBGSTBY_D1 | _D1DBGCKEN | _D3DBGCKEN;
+  JLINK_MEM_WriteU32(_DBGMCU_CR, v);
+  JLINK_SYS_Report1("@NAME@: DBGMCU_CR = ", JLINK_MEM_ReadU32(_DBGMCU_CR));
+  return 0;
+}
+
+/* Before connecting: the Cortex-M7 is on AHB-AP 0 (AP 2 is the system debug bus). */
+int ConfigTargetSettings(void) {
+  JLINK_ExecCommand("CORESIGHT_SetIndexAHBAPToUse = 0");
+  JLINK_ExecCommand("SetResetType = 0");
+  return 0;
+}
+
+/* After connect. */
+int SetupTarget(void) {
+  return _EnableLowPowerDebug();
+}
+
+/* A system reset clears DBGMCU_CR: set it again. */
+int AfterResetTarget(void) {
+  return _EnableLowPowerDebug();
+}

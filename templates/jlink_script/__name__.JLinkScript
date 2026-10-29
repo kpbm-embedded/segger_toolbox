@@ -1,0 +1,22 @@
+/*********************************************************************
+* @NAME@.JLinkScript: J-Link script template (STM32F411CE BlackPill)
+* Pass with -JLinkScriptFile @NAME@.JLinkScript. Functions are optional;
+* delete what you do not need. See https://kb.segger.com/J-Link_Script_Files
+*********************************************************************/
+
+/* Called before the target connects: fix the core / access port here. */
+int ConfigTargetSettings(void) {
+  JLINK_SYS_Report("@NAME@: ConfigTargetSettings");
+  JLINK_ExecCommand("SetResetType = 0");   /* 0 = normal (core + peripherals via AIRCR.SYSRESETREQ) */
+  return 0;
+}
+
+/* Replaces J-Link's reset: halt after reset so flashing starts from a known state. */
+int ResetTarget(void) {
+  JLINK_SYS_Report("@NAME@: ResetTarget");
+  JLINK_TARGET_Halt();
+  JLINK_MEM_WriteU32(0xE000EDFC, 0x01000001);  /* DEMCR: TRCENA | VC_CORERESET */
+  JLINK_MEM_WriteU32(0xE000ED0C, 0x05FA0004);  /* AIRCR: VECTKEY | SYSRESETREQ */
+  JLINK_SYS_Sleep(50);
+  return 0;
+}
