@@ -60,6 +60,8 @@
   not its own breakpoint (endless loop): cmsim reports a firmware BKPT as `S05`. qRcmd needs `O<hex>` + `OK`.
   The RP2040 linker script starts at 0x10000100 (boot2) and the ELF header lands in the first load segment: cmsim
   takes the vector table from `.isr_vector`, not the lowest load address.
-- git: `.gitignore` strict (env, caches, installs, downloads, build output, licence records).
+- git: `.gitignore` strict (env, caches, installs, downloads, build output, licence records); the root entries
+  have no trailing slash so a symlinked `cache` (fresh-clone check) is ignored too. Fresh clone (BOX_INTEGRATION=0,
+  cache linked): bootstrap ok, doctor 14 ok / 4 warn / 0 failed, smoke 12 ok / 6 skip, dry run 36/36, examples 16/16.
 - Results: doctor 17 ok / 4 warn / 0 failed; examples 16/16; smoke 12 ok / 6 skip (licensed binaries); dry run
   36/36 (install logic 15/15, shellcheck 25 files clean); `box scripts check 32_12` clean.
